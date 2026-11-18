@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [0.0.14](https://github.com/langchain-ai/deepagents/compare/deepagents-acp==0.0.13...deepagents-acp==0.0.14) (2026-11-18)
+
+
+### Bug Fixes
+
+* **acp:** add support for agent-client-protocol 1.0 so `dcode --acp` doesn't crash ([#7779](https://github.com/langchain-ai/deepagents/issues/7779)) ([39d15c8](https://github.com/langchain-ai/deepagents/commit/39d15c8e60f45ea27d9689f94e8037d11921f8b3))
+
 ## [0.0.13](https://github.com/langchain-ai/deepagents/compare/deepagents-acp==0.0.12...deepagents-acp==0.0.13) (2026-10-12)
 
 ### Bug Fixes
