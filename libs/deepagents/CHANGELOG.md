@@ -2,6 +2,13 @@
 
 # Deep Agents Changelog
 
+## [0.7.41](https://github.com/langchain-ai/deepagents/compare/deepagents==0.7.40...deepagents==0.7.41) (2026-11-18)
+
+
+### Bug Fixes
+
+* **sdk:** remove false unread-file error claim ([#7823](https://github.com/langchain-ai/deepagents/issues/7823)) ([e3eb70e](https://github.com/langchain-ai/deepagents/commit/e3eb70e4f4ba097a94310570d4d71fd9d128652d))
+
 ## [0.7.40](https://github.com/langchain-ai/deepagents/compare/deepagents==0.7.39...deepagents==0.7.40) (2026-11-18)
 
 ### Bug Fixes
