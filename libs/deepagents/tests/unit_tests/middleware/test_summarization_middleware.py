@@ -1154,6 +1154,44 @@ class TestOffloadingBasic:
         # (which is the content of the summary message added by include_previous_summary)
         assert "Previous summary content" not in content, "Previous summary message should be filtered from offload"
 
+    @pytest.mark.parametrize("use_async", [False, True])
+    async def test_summary_only_batch_leaves_history_unchanged(self, use_async: bool) -> None:  # noqa: FBT001
+        """Evicting only a previous summary adds no empty section to the history file.
+
+        The summary is filtered out before offloading, and the messages it replaced
+        are already in the file, so there is nothing new to append.
+        """
+        existing = "## Summarized at 2024-01-01T00:00:00Z\n\nHuman: Previous message\n\n"
+        backend = MockBackend(existing_content=existing)
+        middleware = SummarizationMiddleware(
+            model=make_mock_model(),
+            backend=backend,
+            trigger=("messages", 3),
+            keep=("messages", 2),
+        )
+        messages = [
+            HumanMessage(
+                content="Here is a summary of the conversation to date:\n\nFirst summary...",
+                additional_kwargs={"lc_source": "summarization"},
+                id="prev-summary",
+            ),
+            HumanMessage(content="New question", id="h1"),
+            AIMessage(content="New answer", id="a1"),
+        ]
+        state = cast("AgentState[Any]", {"messages": messages})
+        call = call_awrap_model_call if use_async else _async_call_wrap_model_call
+
+        result, modified_request = await call(middleware, state, make_mock_runtime())
+
+        assert isinstance(result, ExtendedModelResponse)
+        assert modified_request is not None
+        # Only the previous summary was evicted; both new messages are preserved.
+        assert [m.content for m in modified_request.messages[1:]] == ["New question", "New answer"]
+        assert backend.edit_calls == []
+        assert backend.write_calls == []
+        # The new summary still points at the history file, which holds the older messages.
+        assert "/conversation_history/" in modified_request.messages[0].content
+
 
 class TestSummaryMessageFormat:
     """Tests for the summary message format with file path reference."""

@@ -1380,7 +1380,8 @@ A condensed summary follows:
         summarization event adds a new section with a timestamp header.
 
         Previous summary messages are filtered out to avoid redundant storage during
-        chained summarization events.
+        chained summarization events. If nothing is left after filtering, the file
+        is left unchanged and its path is still returned.
 
         A `None` return is non-fatal; callers may proceed without the
         offloaded history.
@@ -1398,6 +1399,10 @@ A condensed summary follows:
         # Filter out previous summary messages to avoid redundant storage.
         # Base64 images are already converted to path references by the caller.
         filtered_messages = self._filter_summary_messages(messages)
+        if not filtered_messages:
+            # Only previous summaries were evicted; the messages they replaced are already in the file.
+            logger.debug("No new messages to offload to %s; history left unchanged", path)
+            return path
 
         timestamp = datetime.now(UTC).isoformat()
         new_section = f"## Summarized at {timestamp}\n\n{get_buffer_string(filtered_messages, format='xml')}\n\n"
@@ -1457,7 +1462,8 @@ A condensed summary follows:
         summarization event adds a new section with a timestamp header.
 
         Previous summary messages are filtered out to avoid redundant storage during
-        chained summarization events.
+        chained summarization events. If nothing is left after filtering, the file
+        is left unchanged and its path is still returned.
 
         A `None` return is non-fatal; callers may proceed without the
         offloaded history.
@@ -1475,6 +1481,10 @@ A condensed summary follows:
         # Filter out previous summary messages to avoid redundant storage.
         # Base64 images are already converted to path references by the caller.
         filtered_messages = self._filter_summary_messages(messages)
+        if not filtered_messages:
+            # Only previous summaries were evicted; the messages they replaced are already in the file.
+            logger.debug("No new messages to offload to %s; history left unchanged", path)
+            return path
 
         timestamp = datetime.now(UTC).isoformat()
         new_section = f"## Summarized at {timestamp}\n\n{get_buffer_string(filtered_messages, format='xml')}\n\n"
